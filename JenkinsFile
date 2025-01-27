@@ -1,9 +1,9 @@
 pipeline {
     agent any
     
-    environment  {
-        DOCKER_IMAGE =  "sibasis03/java-app:latest"
-        
+    eenvironment {
+        DOCKER_IMAGE = "sibasis03/java-app:latest"
+        DOCKER_REGISTRY_CREDENTIALS_ID = 'dockerhub-credentials'
     }
     
     stages {
@@ -28,7 +28,11 @@ pipeline {
 
         stage('pushing docker image') {
             steps {
-                sh 'docker push sibasis03/java-app:latest'
+              script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_REGISTRY_CREDENTIALS_ID) {
+                        docker.image(DOCKER_IMAGE).push()
+                    }
+                }
             }
         }
         
