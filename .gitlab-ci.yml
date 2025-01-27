@@ -1,7 +1,7 @@
 stages:
   - build_test
 
-image: adoptopenjdk/openjdk11:alpine-jre
+image: maven:3.8.4-jdk-11
 
 build_test:
   stage: build_test
