@@ -10,7 +10,7 @@ pipeline {
         
         stage('checkout') {
             steps {
-                git 'https://github.com/Sibasis03/cicd-rproject.git'
+              echo 'passed'
             }
         }
         
