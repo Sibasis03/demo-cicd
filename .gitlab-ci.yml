@@ -2,6 +2,6 @@ stages:
   - build_test
 
 build_test:
-  stage: build & test
+  stage: build_test
   script:
     - mvn clean package
