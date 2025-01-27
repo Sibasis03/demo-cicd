@@ -1,7 +1,7 @@
 pipeline {
     agent any
     
-    eenvironment {
+    environment {
         DOCKER_IMAGE = "sibasis03/java-app:latest"
         DOCKER_REGISTRY_CREDENTIALS_ID = 'dockerhub-credentials'
     }
