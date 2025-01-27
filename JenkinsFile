@@ -20,9 +20,9 @@ pipeline {
             }
         }
         
-        stage('running application') {
+        stage('building docker image') {
             steps {
-                sh 'java -jar target/demo-0.0.1-SNAPSHOT.jar'
+                sh 'docker build -t sibasis03/java-app:latest .'
             }
         }
         
