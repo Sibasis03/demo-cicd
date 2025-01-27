@@ -21,5 +21,5 @@ build_image:
     - echo "$docker_passwd" | docker login -u "$docker_username" --password-stdin
 
   script:
-    - docker build -t gitlab-java-app .   
-    - docker push gitlab-java-app         
+    - docker build -t sibasis03/gitlab-java-app .   
+    - docker push sibasis03/gitlab-java-app         
