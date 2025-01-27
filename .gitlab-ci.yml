@@ -18,7 +18,8 @@ build_image:
     DOCKER_TLS_CERTDIR: "/certs"      
   stage: build_image                   
   before_script:
-    - echo "$docker_passwd" | docker login -u "$docke_username" --password-stdin 
-  script:
-    - docker build -t gitlab-java-app .   
-    - docker push gitlab-java-app         
+    - echo "$docker_passwd"
+
+  # script:
+  #   - docker build -t gitlab-java-app .   
+  #   - docker push gitlab-java-app         
