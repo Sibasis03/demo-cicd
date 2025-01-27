@@ -20,6 +20,6 @@ build_image:
   before_script:
     - echo "$docker_passwd"
 
-  # script:
-  #   - docker build -t gitlab-java-app .   
-  #   - docker push gitlab-java-app         
+  script:
+    - docker build -t gitlab-java-app .   
+    - docker push gitlab-java-app         
