@@ -25,6 +25,12 @@ pipeline {
                 sh 'docker build -t sibasis03/java-app:latest .'
             }
         }
+
+        stage('pushing docker image') {
+            steps {
+                sh 'docker push sibasis03/java-app:latest'
+            }
+        }
         
         
     }
