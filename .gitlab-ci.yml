@@ -1,5 +1,6 @@
 stages:
   - build_test
+  - build _image
 
 build_test:
 
@@ -9,3 +10,14 @@ build_test:
   script:
     - mvn clean package
 
+build_image:
+
+  image: docker:20.10.7
+
+  stage: build_image
+
+  before script:
+    - docker login -u $docker_username -p $docker_passwd
+  script:
+    - docker build -t gitlab-java-app .
+    - docker push gitlab-java-app
