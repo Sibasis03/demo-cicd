@@ -1,52 +1,31 @@
 pipeline {
-  agent {
-        docker { 
-          image 'sibasis03/dock-agent:v1' 
-          args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    } 
-
-  stages {
-    stage ('checkout') {
-      steps {
-        sh 'echo passed'
-      }
+    agent any
+    
+    environment  {
+        DOCKER_IMAGE =  "sibasis03/java-app:latest"
+        
     }
-
-    stage ('Build & Test') {
-      steps {
-        sh 'mvn clean package'
-      }
-    }
-
-    stage('Static Code Analysis') {
-      environment {
-        SONAR_URL = "http://54.213.253.219:9000"
-      }
-      steps {
-        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-          sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
-        }
-      }
-    }
-
-     stage('Build and Push Docker Image') {
-      environment {
-        DOCKER_IMAGE = "sibasis03/dock-agent:${BUILD_NUMBER}"
-        // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
-        REGISTRY_CREDENTIALS = credentials('docker-cred')
-      }
-      steps {
-        script {
-            sh 'docker build -t ${DOCKER_IMAGE} .'
-            def dockerImage = docker.image("${DOCKER_IMAGE}")
-            docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
-                dockerImage.push()
+    
+    stages {
+        
+        stage('checkout') {
+            steps {
+                git 'https://github.com/Sibasis03/cicd-rproject.git'
             }
         }
-      }
+        
+        stage('build & test') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        
+        stage('running application') {
+            steps {
+                sh 'java -jar target/demo-0.0.1-SNAPSHOT.jar'
+            }
+        }
+        
+        
     }
-
-
-  }
 }
