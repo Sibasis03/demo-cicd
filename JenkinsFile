@@ -11,7 +11,8 @@ pipeline {
         
         stage('checkout') {
             steps {
-              echo 'passed'
+                git branch: 'main', url: 'ssh://git@gitlab.com:your-username/your-repo.git', credentialsId: 'gitlab-ssh-key'
+
             }
         }
         
