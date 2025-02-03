@@ -17,7 +17,13 @@ pipeline {
         
         stage('build & test') {
             steps {
-                sh 'mvn clean package'
+                try {
+                    sh 'mvn clean package'
+                } catch (Exception e) {
+                    echo "Build and test failed: ${e.getMessage()}"
+                    currentBuild.result = 'FAILURE'
+                    error("Stopping pipeline due to build and test failure.")
+                }
             }
         }
         
