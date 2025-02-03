@@ -1,18 +1,23 @@
 pipeline {
-
     agent any
-    
+
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build')
+    }
+
     environment {
-        DOCKER_IMAGE = "sibasis03/java-app:latest"
+        GIT_COMMIT_HASH = sh(script: "git log -n 1 --pretty=format:'%H'", returnStdout: true).trim()
+        DOCKER_IMAGE = "sibasis03/java-app:${GIT_COMMIT_HASH}"
         DOCKER_REGISTRY_CREDENTIALS_ID = 'dockerhub-credentials'
     }
-    
+
     stages {
         
         stage('checkout') {
             steps {
-                git branch: 'main', url: 'ssh://git@gitlab.com:your-username/your-repo.git', credentialsId: 'gitlab-ssh-key'
-
+                script {
+                    git branch: "${params.BRANCH_NAME}", url: 'https://gitlab.com/sibasisgouda18/gitlab-ci.git', credentialsId: 'gitlab-https-credentials'
+                }
             }
         }
         
@@ -24,7 +29,7 @@ pipeline {
                     } catch (Exception e) {
                         echo "Build and test failed: ${e.getMessage()}"
                         currentBuild.result = 'FAILURE'
-                        error("Stopping pipeline due to build and test failure.")
+                        throw e
                     }
                 }
             }
@@ -32,20 +37,34 @@ pipeline {
         
         stage('building docker image') {
             steps {
-                sh 'docker build -t sibasis03/java-app:latest .'
+                script {
+                    try {
+                        echo "Git Commit Hash: ${GIT_COMMIT_HASH}"
+                        echo "Docker image tag: ${DOCKER_IMAGE}"
+                        sh "docker build -t ${DOCKER_IMAGE} ."
+                    } catch (Exception e) {
+                        echo "Docker build failed: ${e.getMessage()}"
+                        currentBuild.result = 'FAILURE'
+                        throw e
+                    }
+                }
             }
         }
 
         stage('pushing docker image') {
             steps {
-              script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_REGISTRY_CREDENTIALS_ID) {
+                script {
+                    try {
+                        docker.withRegistry('https://index.docker.io/v1/', DOCKER_REGISTRY_CREDENTIALS_ID) {
                         docker.image(DOCKER_IMAGE).push()
+                        }
+                    } catch (Exception e) {
+                        echo "Docker login or push failed: ${e.getMessage()}"
+                        currentBuild.result = 'FAILURE'
+                        throw e
                     }
                 }
             }
         }
-        
-        
     }
 }
